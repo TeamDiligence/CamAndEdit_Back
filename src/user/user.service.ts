@@ -1,3 +1,4 @@
+import { UserUpdateRequest } from './dto/request/user.update.request';
 import { UserDto } from './dto/user.dto';
 import { JwtPayloadType } from './../auth/types/jwt.payload.types';
 import { Injectable } from '@nestjs/common';
@@ -17,6 +18,21 @@ export class UserService {
       .userId(findUser.id)
       .workspace([])
       .description(findUser.description)
+      .build();
+  }
+
+  async updateUser(
+    user: JwtPayloadType,
+    dto: UserUpdateRequest,
+  ): Promise<UserDto> {
+    const { userId: id } = user;
+    const updateUser = await this.userRepository.updateUser(id, dto);
+    return Builder<UserDto>()
+      .name(updateUser.name)
+      .email(updateUser.email)
+      .userId(updateUser.id)
+      .workspace([])
+      .description(updateUser.description)
       .build();
   }
 }

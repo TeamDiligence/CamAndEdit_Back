@@ -1,3 +1,4 @@
+import { UserUpdateRequest } from './dto/request/user.update.request';
 import { Prisma } from '.prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -12,5 +13,13 @@ export class UserRepository {
 
   async createUser(data: Prisma.UserCreateInput) {
     return await this.prisma.user.create({ data });
+  }
+
+  async updateUser(userId: number, data: UserUpdateRequest) {
+    const { name, description } = data;
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { name, description },
+    });
   }
 }
