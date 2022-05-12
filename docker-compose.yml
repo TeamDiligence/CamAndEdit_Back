@@ -1,13 +1,31 @@
 version: '3.8'
 
 services:
-  cae-server:
+  cam-mysql:
+    image: mysql:8
+    container_name: cam-mysql
+    ports:
+      - 13306:3306
+    volumes:
+      - ./db/mysql:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - .development.env
+    environment:
+      - TZ=Asia/Seoul
+    cap_add:
+      - SYS_NICE
+  cam-server:
     build:
       context: .
     container_name: cam-server
     restart: always
     ports:
       - 4000:4000
+    depends_on:
+      - cam-mysql
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
