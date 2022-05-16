@@ -11,17 +11,52 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @db.VarChar(50)
-  name         String   @db.VarChar(20)
-  provider     String   @db.VarChar(20)
-  description  String?  @db.VarChar(200)
-  snsId        String   @map("sns_id") @db.VarChar(200)
+  id           Int               @id @default(autoincrement())
+  email        String            @db.VarChar(50)
+  name         String            @db.VarChar(20)
+  provider     String            @db.VarChar(20)
+  description  String?           @db.VarChar(200)
+  snsId        String            @map("sns_id") @db.VarChar(200)
   image        String
-  refreshToken String?  @map("refresh_token")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  refreshToken String?           @map("refresh_token")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  workSpace    WorkSpaceMember[]
 
   @@unique([snsId, provider], name: "snsIdentify")
   @@map("users")
+}
+
+model WorkSpaceMember {
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int        @map("user_id")
+  workSpace   WorkSpace  @relation(fields: [workSpaceId], references: [id])
+  workSpaceId Int        @map("work_space_id")
+  role        MemberRole
+
+  @@unique([userId, workSpaceId], name: "workSpaceMemberId")
+  @@map("work_space_member")
+}
+
+model WorkSpace {
+  id          Int               @id @default(autoincrement())
+  name        String            @db.VarChar(30)
+  member      WorkSpaceMember[]
+  meetingRoom MeetingRoom[]
+
+  @@map("work_space")
+}
+
+model MeetingRoom {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  workSpaceId Int       @map("work_space_id")
+  workSpace   WorkSpace @relation(fields: [workSpaceId], references: [id])
+
+  @@map("meeting_room")
+}
+
+enum MemberRole {
+  Member
+  Admin
 }
