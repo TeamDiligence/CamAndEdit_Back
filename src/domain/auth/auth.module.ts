@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserRepository } from 'src/user/user.repository';
+import { UserRepository } from 'src/domain/user/user.repository';
 import { JwtAuthGuard } from './guards/jwt.guards';
 import { JwtStrategy } from './strategy/jwt.strategy';
 

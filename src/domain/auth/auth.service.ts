@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/user/user.repository';
+import { UserRepository } from 'src/domain/user/user.repository';
 import { JwtPayloadType } from './types/jwt.payload.types';
 import { OauthGoogleUserType } from './types/oauth.user.types';
 

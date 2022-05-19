@@ -43,6 +43,7 @@ model WorkSpace {
   name        String            @db.VarChar(30)
   member      WorkSpaceMember[]
   meetingRoom MeetingRoom[]
+  createdAt   DateTime          @default(now()) @map("created_at")
 
   @@map("work_space")
 }
@@ -52,6 +53,7 @@ model MeetingRoom {
   name        String    @db.VarChar(20)
   workSpaceId Int       @map("work_space_id")
   workSpace   WorkSpace @relation(fields: [workSpaceId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   @@map("meeting_room")
 }

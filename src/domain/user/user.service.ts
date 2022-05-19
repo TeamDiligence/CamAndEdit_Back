@@ -1,6 +1,6 @@
 import { UserUpdateRequest } from './dto/request/user.update.request';
 import { UserDto } from './dto/user.dto';
-import { JwtPayloadType } from './../auth/types/jwt.payload.types';
+import { JwtPayloadType } from '../auth/types/jwt.payload.types';
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { Builder } from 'builder-pattern';
