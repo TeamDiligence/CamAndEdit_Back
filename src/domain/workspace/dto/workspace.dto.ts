@@ -1,10 +1,5 @@
-import { workSpaceFindByUniqueType } from './../workspace.repository';
-import { Builder } from 'builder-pattern';
-import { MeetingRoom, MemberRole, User, WorkSpaceMember } from '.prisma/client';
-import {
-  WorkSpaceMemberDto,
-  workSpaceMemberAndUser,
-} from './workspace.member.dto';
+import { MeetingRoom } from '.prisma/client';
+import { WorkSpaceMemberDto } from './workspace.member.dto';
 
 export class WorkSpaceDto {
   id: number;
@@ -12,5 +7,5 @@ export class WorkSpaceDto {
   adminUserId: number;
   createdAt: Date;
   memberList: WorkSpaceMemberDto[];
-  meetingRoomList: MeetingRoom[];
+  meetingRoomList?: MeetingRoom[];
 }

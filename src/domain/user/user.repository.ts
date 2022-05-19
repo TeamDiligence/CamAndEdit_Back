@@ -22,4 +22,17 @@ export class UserRepository {
       data: { name, description },
     });
   }
+
+  async findUserWithWorkSpace(input: Prisma.UserWhereUniqueInput) {
+    return await this.prisma.user.findUnique({
+      where: input,
+      include: {
+        workSpaceList: {
+          include: {
+            workSpace: true,
+          },
+        },
+      },
+    });
+  }
 }

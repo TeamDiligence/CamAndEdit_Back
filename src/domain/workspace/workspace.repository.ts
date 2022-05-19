@@ -43,9 +43,34 @@ export class WorkSpaceRepository {
       },
     });
   }
+
+  async findWithMemberByUserId(
+    input: number,
+  ): Promise<workSpaceFindByUserIdType[]> {
+    return await this.prisma.workSpace.findMany({
+      where: {
+        member: {
+          some: {
+            userId: input,
+          },
+        },
+      },
+      include: {
+        member: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
 }
 
 export type workSpaceFindByUniqueType = WorkSpace & {
   member: (WorkSpaceMember & { user: User })[];
   meetingRoom: MeetingRoom[];
+};
+
+export type workSpaceFindByUserIdType = WorkSpace & {
+  member: (WorkSpaceMember & { user: User })[];
 };

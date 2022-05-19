@@ -11,17 +11,17 @@ datasource db {
 }
 
 model User {
-  id           Int               @id @default(autoincrement())
-  email        String            @db.VarChar(50)
-  name         String            @db.VarChar(20)
-  provider     String            @db.VarChar(20)
-  description  String?           @db.VarChar(200)
-  snsId        String            @map("sns_id") @db.VarChar(200)
-  image        String
-  refreshToken String?           @map("refresh_token")
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @updatedAt @map("updated_at")
-  workSpace    WorkSpaceMember[]
+  id            Int               @id @default(autoincrement())
+  email         String            @db.VarChar(50)
+  name          String            @db.VarChar(20)
+  provider      String            @db.VarChar(20)
+  description   String?           @db.VarChar(200)
+  snsId         String            @map("sns_id") @db.VarChar(200)
+  image         String
+  refreshToken  String?           @map("refresh_token")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  workSpaceList WorkSpaceMember[]
 
   @@unique([snsId, provider], name: "snsIdentify")
   @@map("users")
