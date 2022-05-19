@@ -1,4 +1,11 @@
-import { Prisma, WorkSpace } from '.prisma/client';
+import {
+  MeetingRoom,
+  MemberRole,
+  Prisma,
+  User,
+  WorkSpace,
+  WorkSpaceMember,
+} from '.prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/global/prisma/prisma.service';
 
@@ -8,8 +15,18 @@ export class WorkSpaceRepository {
 
   async findByUnique(
     input: Prisma.WorkSpaceWhereUniqueInput,
-  ): Promise<WorkSpace> {
-    return await this.prisma.workSpace.findUnique({ where: input });
+  ): Promise<workSpaceFindByUniqueType> {
+    return await this.prisma.workSpace.findUnique({
+      where: input,
+      include: {
+        member: {
+          include: {
+            user: true,
+          },
+        },
+        meetingRoom: true,
+      },
+    });
   }
 
   async createWorkSpace(name: string, userId: number) {
@@ -20,9 +37,15 @@ export class WorkSpaceRepository {
           create: {
             userId,
             role: 'Admin',
+            isInvite: true,
           },
         },
       },
     });
   }
 }
+
+export type workSpaceFindByUniqueType = WorkSpace & {
+  member: (WorkSpaceMember & { user: User })[];
+  meetingRoom: MeetingRoom[];
+};

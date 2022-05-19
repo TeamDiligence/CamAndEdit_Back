@@ -12,13 +12,7 @@ export class UserService {
   async getUserInfo(user: JwtPayloadType): Promise<UserDto> {
     const { userId: id, email } = user;
     const findUser = await this.userRepository.findByUnique({ id });
-    return Builder<UserDto>()
-      .name(findUser.name)
-      .email(findUser.email)
-      .userId(findUser.id)
-      .workspace([])
-      .description(findUser.description)
-      .build();
+    return UserDto.from(findUser);
   }
 
   async updateUser(
@@ -27,12 +21,6 @@ export class UserService {
   ): Promise<UserDto> {
     const { userId: id } = user;
     const updateUser = await this.userRepository.updateUser(id, dto);
-    return Builder<UserDto>()
-      .name(updateUser.name)
-      .email(updateUser.email)
-      .userId(updateUser.id)
-      .workspace([])
-      .description(updateUser.description)
-      .build();
+    return UserDto.from(updateUser);
   }
 }

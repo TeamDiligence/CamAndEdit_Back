@@ -19,4 +19,11 @@ export class WorkSpaceController {
     const result = await this.workSpaceService.createWorkSpace(user, body);
     return ResponseDto.OK(result);
   }
+
+  @Get('/api/workspace/:id')
+  @UseGuards(JwtAuthGuard)
+  async getWorkSpace(@Param('id') workSpaceId: number) {
+    const result = await this.workSpaceService.findWorkSpace(workSpaceId);
+    return ResponseDto.OK_DATA('워크스페이스 조회 성공', result);
+  }
 }

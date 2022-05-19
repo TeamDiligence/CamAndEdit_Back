@@ -33,6 +33,7 @@ model WorkSpaceMember {
   workSpace   WorkSpace  @relation(fields: [workSpaceId], references: [id])
   workSpaceId Int        @map("work_space_id")
   role        MemberRole
+  isInvite    Boolean    @map("is_invite")
 
   @@unique([userId, workSpaceId], name: "workSpaceMemberId")
   @@map("work_space_member")
