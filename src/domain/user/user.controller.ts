@@ -1,10 +1,10 @@
 import { UserUpdateRequest } from './dto/request/user.update.request';
-import { ResponseDto } from './../global/response/response.dto';
+import { ResponseDto } from '../../global/response/response.dto';
 import { UserService } from './user.service';
-import { JwtPayloadType } from './../auth/types/jwt.payload.types';
+import { JwtPayloadType } from '../auth/types/jwt.payload.types';
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
-import { User } from 'src/auth/jwt.decorator';
+import { JwtAuthGuard } from 'src/domain/auth/guards/jwt.guards';
+import { User } from 'src/domain/auth/jwt.decorator';
 
 @Controller()
 export class UserController {
