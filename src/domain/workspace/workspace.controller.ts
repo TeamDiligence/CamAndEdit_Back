@@ -26,4 +26,17 @@ export class WorkSpaceController {
     const result = await this.workSpaceService.findWorkSpace(workSpaceId);
     return ResponseDto.OK_DATA('워크스페이스 조회 성공', result);
   }
+
+  @Get('/api/workspace/:id/users')
+  @UseGuards(JwtAuthGuard)
+  async getWorkSpaceUsers(
+    @Param('id') workSpaceId: number,
+    @User() user: JwtPayloadType,
+  ) {
+    const result = await this.workSpaceService.getWorkSpaceUserList(
+      workSpaceId,
+      user,
+    );
+    return ResponseDto.OK_DATA('워크 스페이스 유저 리스트', result);
+  }
 }

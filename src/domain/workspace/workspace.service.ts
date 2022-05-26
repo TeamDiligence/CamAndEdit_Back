@@ -50,4 +50,24 @@ export class WorkSpaceService {
       .meetingRoomList(findWorkSpace.meetingRoom)
       .build();
   }
+
+  async getWorkSpaceUserList(workSpaceId: number, user: JwtPayloadType) {
+    const findWorkSpace = await this.workSpaceRepository.findByUnique({
+      id: workSpaceId,
+    });
+
+    if (!findWorkSpace) {
+      throw new HttpException('없는 워크스페이스입니다.', 400);
+    }
+
+    return findWorkSpace.member.map((user) => {
+      return {
+        userId: user.userId,
+        email: user.user.email,
+        isInvite: user.isInvite,
+        role: user.role,
+        image: user.user.image,
+      };
+    });
+  }
 }
