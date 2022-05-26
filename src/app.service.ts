@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import AppConfig from './global/config/AppConfig';
-import JwtConfig from './global/config/JwtConfig';
+import AppConfig from './global/config/app.config';
+import JwtConfig from './global/config/jwt.config';
 
 @Injectable()
 export class AppService {
