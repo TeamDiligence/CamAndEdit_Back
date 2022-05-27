@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import { User } from '../auth/jwt.decorator';
 import { WorkSpaceCreateRequest } from './dto/request/workspace.create.request';
+import { WorkSpaceInviteRequest } from './dto/request/workspace.invite.request';
 
 @Controller()
 export class WorkSpaceController {
@@ -46,5 +47,16 @@ export class WorkSpaceController {
       user,
     );
     return ResponseDto.OK_DATA('워크 스페이스 유저 리스트', result);
+  }
+
+  @Post('/api/workspace/:id/invite')
+  @UseGuards(JwtAuthGuard)
+  async inviteWorkSpace(
+    @Param('id') workSpaceId: number,
+    @Body() dto: WorkSpaceInviteRequest,
+    @User() user: JwtPayloadType,
+  ) {
+    await this.workSpaceService.inviteMember(workSpaceId, user, dto);
+    return ResponseDto.OK('초대 메일 전송 성공');
   }
 }

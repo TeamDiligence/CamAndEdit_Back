@@ -1,3 +1,4 @@
+import { EmailService } from './../email/email.service';
 import { Builder } from 'builder-pattern';
 import { WorkSpaceMemberDto } from './dto/workspace.member.dto';
 import { WorkSpaceRepository } from './workspace.repository';
@@ -6,10 +7,14 @@ import { JwtPayloadType } from './../auth/types/jwt.payload.types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { WorkSpaceDto } from './dto/workspace.dto';
 import { MemberRole } from '.prisma/client';
+import { WorkSpaceInviteRequest } from './dto/request/workspace.invite.request';
 
 @Injectable()
 export class WorkSpaceService {
-  constructor(private workSpaceRepository: WorkSpaceRepository) {}
+  constructor(
+    private workSpaceRepository: WorkSpaceRepository,
+    private emailService: EmailService,
+  ) {}
 
   async createWorkSpace(
     user: JwtPayloadType,
@@ -69,5 +74,31 @@ export class WorkSpaceService {
         image: user.user.image,
       };
     });
+  }
+
+  async inviteMember(
+    workSpaceId: number,
+    user: JwtPayloadType,
+    dto: WorkSpaceInviteRequest,
+  ) {
+    const { email: sendEmail } = dto;
+    const { userId } = user;
+
+    const findMemberList =
+      await this.workSpaceRepository.findWorkSpaceMemberList(workSpaceId);
+
+    const adminUser = findMemberList.filter(
+      (user) => user.userId === userId && user.role === MemberRole.Admin,
+    );
+    if (adminUser.length == 0) {
+      throw new HttpException('권한 없음', 403);
+    }
+
+    const result = await this.emailService.sendInviteMail(
+      sendEmail,
+      workSpaceId,
+    );
+
+    return result;
   }
 }
