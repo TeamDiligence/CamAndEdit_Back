@@ -1,20 +1,21 @@
-import type { RedisClientOptions } from 'redis';
-import { ConfigService } from '@nestjs/config';
-import { CacheModule, Module } from '@nestjs/common';
-import * as redisStore from 'cache-manager-redis-store';
+import { ConfigService, ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 import { RedisCacheService } from './redis-cache.service';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { async } from 'rxjs';
 
 @Module({
   imports: [
-    CacheModule.registerAsync<RedisClientOptions>({
-      useFactory: async (config: ConfigService) => ({
-        store: redisStore,
-        host: config.get('redis.url'),
-        port: config.get('redis.port'),
-        password: config.get('redis.password'),
-        ttl: 600,
-      }),
+    RedisModule.forRootAsync({
       inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        readyLog: true,
+        config: {
+          host: 'localhost',
+          password: 'qwer1234',
+          port: 6379,
+        },
+      }),
     }),
   ],
   providers: [RedisCacheService],

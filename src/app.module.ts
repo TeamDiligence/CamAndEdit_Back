@@ -1,3 +1,4 @@
+import { EmailModule } from './domain/email/email.module';
 import { RedisCacheModule } from './global/utils/cache/redis-cache.module';
 import { WorkSpaceModule } from './domain/workspace/workspace.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
@@ -12,11 +13,12 @@ import { LoggerMiddleware } from './global/middleware/logger.middleware';
 import { PrismaModule } from './global/prisma/prisma.module';
 import { UserModule } from './domain/user/user.module';
 import redisConfig from './global/config/redis.config';
+import emailConfig from './global/config/email.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [appConfig, jwtConfig, redisConfig],
+      load: [appConfig, jwtConfig, redisConfig, emailConfig],
       isGlobal: true,
     }),
     PrismaModule,
@@ -24,6 +26,7 @@ import redisConfig from './global/config/redis.config';
     UserModule,
     WorkSpaceModule,
     RedisCacheModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService, WebRtcGateway],

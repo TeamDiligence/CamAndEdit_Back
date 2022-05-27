@@ -1,26 +1,43 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { Cache, CachingConfig } from 'cache-manager';
-
+import { Injectable } from '@nestjs/common';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import Redis from 'ioredis';
 @Injectable()
 export class RedisCacheService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-
-  async getCache(key: string): Promise<string> {
-    console.log('method getCache ', key);
-    return await this.cacheManager.get(key);
+  constructor(@InjectRedis() private readonly redis: Redis) {}
+  async ping(): Promise<string> {
+    return await this.redis.ping();
   }
 
-  async setCache(
-    key: string,
-    value: string,
-    option?: CachingConfig,
-  ): Promise<string> {
-    console.log('method setCache ', key, value, option);
-
-    return await this.cacheManager.set(key, value, option);
+  async setString(key: string, value: string, ttl: number) {
+    const result = await this.redis.set(key, value);
+    await this.redis.expire(key, ttl);
+    return result;
   }
 
-  async delCache(key: string): Promise<string> {
-    return await this.cacheManager.del(key);
+  async getWorkSpaceInvitedMember(workSpaceId: string): Promise<string[]> {
+    const stream = this.redis.scanStream({
+      match: `invite-${workSpaceId}-*`,
+    });
+    const keys = await new Promise((res) => {
+      const keysArray = [];
+      stream.on('data', async (keys) => {
+        keysArray.push(...keys);
+      }),
+        stream.on('end', () => {
+          res(keysArray);
+        });
+    }).then((res: string[]) => {
+      console.log('keys ', res);
+      return res;
+    });
+    if (keys.length > 0) {
+      const invitedMember = await this.redis.mget(keys);
+      return invitedMember;
+    }
+    return [];
+  }
+
+  async deleteByKey(key: string): Promise<number> {
+    return await this.redis.del(key);
   }
 }
