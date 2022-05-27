@@ -75,6 +75,17 @@ export class WorkSpaceRepository {
       },
     });
   }
+
+  async createWorkSpaceMember(workSpaceId: number, userId: number) {
+    return await this.prisma.workSpaceMember.create({
+      data: {
+        workSpaceId,
+        userId,
+        role: MemberRole.Member,
+        isInvite: true,
+      },
+    });
+  }
 }
 
 export type workSpaceFindByUniqueType = WorkSpace & {

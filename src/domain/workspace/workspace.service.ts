@@ -109,4 +109,32 @@ export class WorkSpaceService {
 
     return result;
   }
+
+  async inviteCheck(
+    workSpaceId: number,
+    user: JwtPayloadType,
+    dto: WorkSpaceInviteRequest,
+  ) {
+    const { email: sendEmail } = dto;
+    const { userId } = user;
+
+    const findMemberList =
+      await this.workSpaceRepository.findWorkSpaceMemberList(workSpaceId);
+
+    const existUser = findMemberList.filter((user) => user.userId === userId);
+    if (existUser.length > 0) {
+      throw new HttpException('이미 초대된 유저입니다.', 400);
+    }
+
+    const cacheUser = await this.redisCache.getString(
+      `invite-${workSpaceId}-${sendEmail}`,
+    );
+    console.log(cacheUser);
+    if (cacheUser) {
+      await this.workSpaceRepository.createWorkSpaceMember(workSpaceId, userId);
+      await this.redisCache.deleteByKey(`invite-${workSpaceId}-${sendEmail}`);
+      return true;
+    }
+    throw new HttpException('잘못된 정보입니다.', 400);
+  }
 }

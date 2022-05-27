@@ -8,6 +8,10 @@ export class RedisCacheService {
     return await this.redis.ping();
   }
 
+  async getString(key: string): Promise<string> {
+    return await this.redis.get(key);
+  }
+
   async setString(key: string, value: string, ttl: number) {
     const result = await this.redis.set(key, value);
     await this.redis.expire(key, ttl);

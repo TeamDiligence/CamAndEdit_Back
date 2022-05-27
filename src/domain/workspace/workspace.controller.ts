@@ -59,4 +59,19 @@ export class WorkSpaceController {
     await this.workSpaceService.inviteMember(workSpaceId, user, dto);
     return ResponseDto.OK('초대 메일 전송 성공');
   }
+
+  @Post('/api/workspace/:id/invite/check')
+  @UseGuards(JwtAuthGuard)
+  async inviteCheck(
+    @Param('id') workSpaceId: number,
+    @Body() dto: WorkSpaceInviteRequest,
+    @User() user: JwtPayloadType,
+  ) {
+    const result = await this.workSpaceService.inviteCheck(
+      workSpaceId,
+      user,
+      dto,
+    );
+    return ResponseDto.OK('초대 성공');
+  }
 }
