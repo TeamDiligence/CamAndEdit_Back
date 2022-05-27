@@ -37,7 +37,6 @@ export class WorkSpaceRepository {
           create: {
             userId,
             role: 'Admin',
-            isInvite: true,
           },
         },
       },
@@ -82,7 +81,6 @@ export class WorkSpaceRepository {
         workSpaceId,
         userId,
         role: MemberRole.Member,
-        isInvite: true,
       },
     });
   }

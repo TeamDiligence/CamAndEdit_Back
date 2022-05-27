@@ -70,7 +70,6 @@ export class WorkSpaceService {
       return {
         userId: user.userId,
         email: user.user.email,
-        isInvite: user.isInvite,
         role: user.role,
         image: user.user.image,
       };
