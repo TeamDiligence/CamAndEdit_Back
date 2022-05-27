@@ -4,9 +4,10 @@ import { WorkSpaceService } from './workspace.service';
 import { Module } from '@nestjs/common';
 import { WorkSpaceController } from './workspace.controller';
 import { UserRepository } from '../user/user.repository';
+import { RedisCacheModule } from 'src/global/utils/cache/redis-cache.module';
 
 @Module({
-  imports: [EmailModule],
+  imports: [EmailModule, RedisCacheModule],
   controllers: [WorkSpaceController],
   providers: [WorkSpaceService, UserRepository, WorkSpaceRepository],
 })

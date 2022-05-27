@@ -1,3 +1,4 @@
+import { RedisCacheService } from './../../global/utils/cache/redis-cache.service';
 import { EmailService } from './../email/email.service';
 import { Builder } from 'builder-pattern';
 import { WorkSpaceMemberDto } from './dto/workspace.member.dto';
@@ -14,6 +15,7 @@ export class WorkSpaceService {
   constructor(
     private workSpaceRepository: WorkSpaceRepository,
     private emailService: EmailService,
+    private redisCache: RedisCacheService,
   ) {}
 
   async createWorkSpace(
@@ -64,8 +66,7 @@ export class WorkSpaceService {
     if (!findWorkSpace) {
       throw new HttpException('없는 워크스페이스입니다.', 400);
     }
-
-    return findWorkSpace.member.map((user) => {
+    const memberList = findWorkSpace.member.map((user) => {
       return {
         userId: user.userId,
         email: user.user.email,
@@ -74,6 +75,13 @@ export class WorkSpaceService {
         image: user.user.image,
       };
     });
+    const inviteMember = await this.redisCache.getWorkSpaceInvitedMember(
+      workSpaceId.toString(),
+    );
+    return {
+      memberList,
+      inviteMember: inviteMember,
+    };
   }
 
   async inviteMember(
