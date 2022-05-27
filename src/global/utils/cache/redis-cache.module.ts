@@ -11,9 +11,9 @@ import { async } from 'rxjs';
       useFactory: async (config: ConfigService) => ({
         readyLog: true,
         config: {
-          host: 'localhost',
-          password: 'qwer1234',
-          port: 6379,
+          host: config.get('redis.host'),
+          password: config.get('redis.password'),
+          port: config.get('redis.port'),
         },
       }),
     }),
