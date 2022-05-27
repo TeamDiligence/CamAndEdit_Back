@@ -1,3 +1,5 @@
+import { RedisCacheService } from './../../global/utils/cache/redis-cache.service';
+import { EmailService } from './../email/email.service';
 import { Builder } from 'builder-pattern';
 import { WorkSpaceMemberDto } from './dto/workspace.member.dto';
 import { WorkSpaceRepository } from './workspace.repository';
@@ -6,10 +8,15 @@ import { JwtPayloadType } from './../auth/types/jwt.payload.types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { WorkSpaceDto } from './dto/workspace.dto';
 import { MemberRole } from '.prisma/client';
+import { WorkSpaceInviteRequest } from './dto/request/workspace.invite.request';
 
 @Injectable()
 export class WorkSpaceService {
-  constructor(private workSpaceRepository: WorkSpaceRepository) {}
+  constructor(
+    private workSpaceRepository: WorkSpaceRepository,
+    private emailService: EmailService,
+    private redisCache: RedisCacheService,
+  ) {}
 
   async createWorkSpace(
     user: JwtPayloadType,
@@ -49,5 +56,84 @@ export class WorkSpaceService {
       .memberList(workSpaceMembers)
       .meetingRoomList(findWorkSpace.meetingRoom)
       .build();
+  }
+
+  async getWorkSpaceUserList(workSpaceId: number, user: JwtPayloadType) {
+    const findWorkSpace = await this.workSpaceRepository.findByUnique({
+      id: workSpaceId,
+    });
+
+    if (!findWorkSpace) {
+      throw new HttpException('없는 워크스페이스입니다.', 400);
+    }
+    const memberList = findWorkSpace.member.map((user) => {
+      return {
+        userId: user.userId,
+        email: user.user.email,
+        role: user.role,
+        image: user.user.image,
+      };
+    });
+    const inviteMember = await this.redisCache.getWorkSpaceInvitedMember(
+      workSpaceId.toString(),
+    );
+    return {
+      memberList,
+      inviteMember: inviteMember,
+    };
+  }
+
+  async inviteMember(
+    workSpaceId: number,
+    user: JwtPayloadType,
+    dto: WorkSpaceInviteRequest,
+  ) {
+    const { email: sendEmail } = dto;
+    const { userId } = user;
+
+    const findMemberList =
+      await this.workSpaceRepository.findWorkSpaceMemberList(workSpaceId);
+
+    const adminUser = findMemberList.filter(
+      (user) => user.userId === userId && user.role === MemberRole.Admin,
+    );
+    if (adminUser.length == 0) {
+      throw new HttpException('권한 없음', 403);
+    }
+
+    const result = await this.emailService.sendInviteMail(
+      sendEmail,
+      workSpaceId,
+    );
+
+    return result;
+  }
+
+  async inviteCheck(
+    workSpaceId: number,
+    user: JwtPayloadType,
+    dto: WorkSpaceInviteRequest,
+  ) {
+    const { email: sendEmail } = dto;
+    const { userId } = user;
+
+    const findMemberList =
+      await this.workSpaceRepository.findWorkSpaceMemberList(workSpaceId);
+
+    const existUser = findMemberList.filter((user) => user.userId === userId);
+    if (existUser.length > 0) {
+      throw new HttpException('이미 초대된 유저입니다.', 400);
+    }
+
+    const cacheUser = await this.redisCache.getString(
+      `invite-${workSpaceId}-${sendEmail}`,
+    );
+    console.log(cacheUser);
+    if (cacheUser) {
+      await this.workSpaceRepository.createWorkSpaceMember(workSpaceId, userId);
+      await this.redisCache.deleteByKey(`invite-${workSpaceId}-${sendEmail}`);
+      return true;
+    }
+    throw new HttpException('잘못된 정보입니다.', 400);
   }
 }

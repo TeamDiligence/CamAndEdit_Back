@@ -37,7 +37,6 @@ export class WorkSpaceRepository {
           create: {
             userId,
             role: 'Admin',
-            isInvite: true,
           },
         },
       },
@@ -61,6 +60,27 @@ export class WorkSpaceRepository {
             user: true,
           },
         },
+      },
+    });
+  }
+
+  async findWorkSpaceMemberList(workSpaceId: number) {
+    return await this.prisma.workSpaceMember.findMany({
+      where: {
+        workSpaceId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async createWorkSpaceMember(workSpaceId: number, userId: number) {
+    return await this.prisma.workSpaceMember.create({
+      data: {
+        workSpaceId,
+        userId,
+        role: MemberRole.Member,
       },
     });
   }

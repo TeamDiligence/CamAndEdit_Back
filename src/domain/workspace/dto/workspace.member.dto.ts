@@ -6,7 +6,6 @@ export class WorkSpaceMemberDto {
   image: string;
   name: string;
   role: MemberRole;
-  isInvite: boolean;
 
   public static from(workSpaceMember: workSpaceMemberAndUser) {
     return Builder<WorkSpaceMemberDto>()
@@ -14,7 +13,6 @@ export class WorkSpaceMemberDto {
       .userId(workSpaceMember.userId)
       .image(workSpaceMember.user.image)
       .role(workSpaceMember.role)
-      .isInvite(workSpaceMember.isInvite)
       .build();
   }
 }
@@ -23,6 +21,5 @@ export type workSpaceMemberAndUser = {
   userId: number;
   workSpaceId: number;
   role: MemberRole;
-  isInvite: boolean;
   user: User;
 };
