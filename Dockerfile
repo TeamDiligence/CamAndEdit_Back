@@ -7,11 +7,11 @@ COPY package*.json ./
 
 RUN npm install
 RUN npm install -g prisma
-RUN npm run prisma:generate:dev 
+RUN npm run prisma:generate:prod 
 
 COPY . .
 
-RUN chmod +x entrypoint-dev.sh
-ENTRYPOINT ["sh","/usr/src/app/entrypoint-dev.sh"]
+RUN chmod +x entrypoint-prod.sh
+ENTRYPOINT ["sh","/usr/src/app/entrypoint-prod.sh"]
 
 EXPOSE 4000
