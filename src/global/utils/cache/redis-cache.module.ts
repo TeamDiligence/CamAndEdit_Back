@@ -1,8 +1,7 @@
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { RedisCacheService } from './redis-cache.service';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { async } from 'rxjs';
 
 @Module({
   imports: [
@@ -12,7 +11,6 @@ import { async } from 'rxjs';
         readyLog: true,
         config: {
           host: config.get('redis.host'),
-          password: config.get('redis.password'),
           port: config.get('redis.port'),
         },
       }),
